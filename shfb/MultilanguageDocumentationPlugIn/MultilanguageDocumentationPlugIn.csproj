@@ -42,9 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SandcastleBuilder.Utils">
-      <HintPath>C:\Program Files\EWSoftware\Sandcastle Help File Builder\SandcastleBuilder.Utils.dll</HintPath>
+      <HintPath Condition="$(Platform) == x64">$(ProgramFiles(x86))\EWSoftware\Sandcastle Help File Builder\SandcastleBuilder.Utils.dll</HintPath>
+      <HintPath>$(ProgramFiles)\EWSoftware\Sandcastle Help File Builder\SandcastleBuilder.Utils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -57,7 +59,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>Copy /y "$(TargetPath)" "%25ALLUSERSPROFILE%25\Application Data\EWSoftware\Sandcastle Help File Builder\Components and Plug-Ins\$(TargetName).plugins"</PostBuildEvent>
+    <PostBuildEvent>MD "%25ProgramData%25\EWSoftware\Sandcastle Help File Builder\Components and Plug-Ins"
+Copy /y "$(TargetDir)$(TargetFileName)" "%25ProgramData%25\EWSoftware\Sandcastle Help File Builder\Components and Plug-Ins\$(TargetFileName)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,15 +1,10 @@
 ﻿/*
- * Copyright 2011 The Poderosa Project.
+ * Copyright 2011,2015 The Poderosa Project.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- *
- * $Id: MultilanguageDocumentationPlugIn.cs,v 1.1 2011/05/03 17:32:10 kzmi Exp $
  */
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
@@ -17,16 +12,26 @@ using System.Xml.XPath;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
-using SandcastleBuilder.Utils.PlugIn;
+using SandcastleBuilder.Utils.BuildComponent;
+using System.Reflection;
+using System;
+using System.Diagnostics;
 
 namespace MultilanguageDocumentationPlugIn
 {
     /// <summary>
     /// Multilanguage Documentation PlugIn for Sandcastle Help File Builder
     /// </summary>
-    public class MultilanguageDocumentationPlugIn : IPlugIn
+    [HelpFileBuilderPlugInExport(
+        "Multilanguage Documentation Support",
+        IsConfigurable = true,
+        RunsInPartialBuild = true,
+        Version = "1.1",
+        Copyright = "Copyright (c) 2011,2015 Poderosa Project, All Rights Reserved",
+        Description = "Multilanguage Documentation PlugIn for Sandcastle Help File Builder")]
+    public sealed class MultilanguageDocumentationPlugIn : IPlugIn
     {
-        private ExecutionPointCollection executionPoints;
+        private List<ExecutionPoint> executionPoints;
         private BuildProcess builder;
 
         private string targetLanguage = null;
@@ -37,79 +42,20 @@ namespace MultilanguageDocumentationPlugIn
         private Regex notLangTagPattern = new Regex(@"^(?:ul|ol|dl|em|br|hr|tt)$");
 
         /// <summary>
-        /// This read-only property returns a friendly name for the plug-in
-        /// </summary>
-        public string Name
-        {
-            get { return "Multilanguage Documentation Support"; }
-        }
-
-        /// <summary>
-        /// This read-only property returns the version of the plug-in
-        /// </summary>
-        public Version Version
-        {
-            get
-            {
-                Assembly asm = Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-                return new Version(fvi.ProductVersion);
-            }
-        }
-
-        /// <summary>
-        /// This read-only property returns the copyright information for the
-        /// plug-in.
-        /// </summary>
-        public string Copyright
-        {
-            get
-            {
-                Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyCopyrightAttribute copyright =
-                    (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(asm, typeof(AssemblyCopyrightAttribute));
-                return copyright.Copyright;
-            }
-        }
-
-        /// <summary>
-        /// This read-only property returns a brief description of the plug-in
-        /// </summary>
-        public string Description
-        {
-            get
-            {
-                Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyDescriptionAttribute description =
-                    (AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(asm, typeof(AssemblyDescriptionAttribute));
-                return description.Description;
-            }
-        }
-
-        /// <summary>
-        /// This read-only property returns true if the plug-in should run in
-        /// a partial build or false if it should not.
-        /// </summary>
-        /// <value>If this returns false, the plug-in will not be loaded when
-        /// a partial build is performed.</value>
-        public bool RunsInPartialBuild
-        {
-            get { return true; }
-        }
-
-        /// <summary>
         /// This read-only property returns a collection of execution points
         /// that define when the plug-in should be invoked during the build
         /// process.
         /// </summary>
-        public ExecutionPointCollection ExecutionPoints
+        public IEnumerable<ExecutionPoint> ExecutionPoints
         {
             get
             {
                 if (executionPoints == null)
                 {
-                    executionPoints = new ExecutionPointCollection();
-                    executionPoints.Add(new ExecutionPoint(BuildStep.GenerateApiFilter, ExecutionBehaviors.Before));
+                    executionPoints =
+                        new List<ExecutionPoint>() {
+                            new ExecutionPoint(BuildStep.GenerateApiFilter, ExecutionBehaviors.Before)
+                        };
                 }
                 return executionPoints;
             }
@@ -126,9 +72,9 @@ namespace MultilanguageDocumentationPlugIn
         /// builder project.</remarks>
         public string ConfigurePlugIn(SandcastleProject project, string currentConfig)
         {
-            using (SettingsForm dialog = new SettingsForm(currentConfig))
+            using (var dialog = new SettingsForm(currentConfig))
             {
-                DialogResult result = dialog.ShowDialog();
+                var result = dialog.ShowDialog();
                 if (result == DialogResult.OK)
                     return dialog.Config;
             }
@@ -147,10 +93,10 @@ namespace MultilanguageDocumentationPlugIn
         {
             this.builder = buildProcess;
 
-            XPathNavigator configRoot = configuration.SelectSingleNode("configuration");
+            var configRoot = configuration.SelectSingleNode("configuration");
             if (configRoot != null)
             {
-                XPathNavigator node = configRoot.SelectSingleNode("targetLanguage");
+                var node = configRoot.SelectSingleNode("targetLanguage");
                 if (node != null)
                 {
                     targetLanguage = node.InnerXml.Trim();
@@ -287,5 +233,6 @@ namespace MultilanguageDocumentationPlugIn
         public void Dispose()
         {
         }
+
     }
 }
