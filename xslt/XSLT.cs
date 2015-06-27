@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -8,12 +8,12 @@ using System.Xml.Xsl;
 namespace xslt
 {
 	/// <summary>
-	/// Class1 ‚ÌŠT—v‚Ìà–¾‚Å‚·B
+	/// Class1 ã®æ¦‚è¦ã®èª¬æ˜ã§ã™ã€‚
 	/// </summary>
 	class XSLTCommand
 	{
 		/// <summary>
-		/// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒƒCƒ“ ƒGƒ“ƒgƒŠ ƒ|ƒCƒ“ƒg‚Å‚·B
+		/// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ¡ã‚¤ãƒ³ ã‚¨ãƒ³ãƒˆãƒª ãƒã‚¤ãƒ³ãƒˆã§ã™ã€‚
 		/// </summary>
 		[STAThread]
 		static void Main(string[] args)
